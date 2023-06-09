@@ -12,7 +12,7 @@ int start_menu(){
     cout << "OpenSourceAssignment5(OSA5) - by 20011759 ParkSuMin" << endl;
     cout << "mysql + HEAAN project, github flow" << endl;
     
-    cout << "connect db..." <<endl << "input your user name, password and database";
+    cout << "connect db..." <<endl << "input your user name, password and database" << endl;
 
     MYSQL conn_ptr;
     mysql_init(&conn_ptr);    //mssql initialize
@@ -20,9 +20,11 @@ int start_menu(){
         string name;
         string password;
         
-        cin >> name;
-        cin >> password;
-
+        cout << "user name : (recommend : root)";
+        getline(cin,name);
+        cout << "password : (recomment : )";
+        getline(cin,password);
+        
         if(!mysql_real_connect(&conn_ptr, "localhost", name.c_str(), password.c_str(), NULL, 0, NULL, 0))
         {
         printf("%s\n", mysql_error(&conn_ptr));
@@ -31,14 +33,31 @@ int start_menu(){
         }
     }
     
-      
-    
-    
-    cout << "select or create your db" << endl;
-    //TODO : select or create db...
-    string databasename;
-    cin >> databasename;
 
+    cout << "select  your db" << endl;
+    
+    while(true){
+        cout << "databases list : " << endl;
+        MYSQL_RES* res = mysql_list_dbs(&conn_ptr,"%");
+        MYSQL_ROW row;
+        int fields = mysql_num_fields(res);
+        while((row = mysql_fetch_row(res)))
+        {
+            for(int cnt = 0; cnt<fields; ++cnt)
+                cout << cnt << " : " << row[cnt];
+            cout << endl;
+        }
+        cout << "input database name or number" << endl;
+        string tmp;
+        getline(cin,tmp);
+        if(mysql_select_db(&conn_ptr,tmp.c_str()))
+            break;
+        if(mysql_select_db(&conn_ptr, row[stoi(tmp.c_str())]))
+            break;
+        cout << "error - does not exist database" << endl;
+    }
+    
+    
     cout << "please log-in or create key" <<endl;
     //TODO : log-in or create HEAAN account
 
