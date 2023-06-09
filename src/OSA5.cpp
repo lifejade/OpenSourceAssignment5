@@ -1,6 +1,4 @@
 #include <string>
-#include <mysql/mysql.h>
-#include </HEAAN/HEAAN/src/HEAAN.h>
 #include "OSA5.h"
 
 using namespace std;
@@ -36,36 +34,20 @@ int start_menu(){
 
     cout << "select or create your db" << endl;
     cout << "1 : select, 2 : create" << endl;
-    int temp = cin.get();
+    int n = cin.get();
     while(cin.get() != '\n')
-            continue;
-    
-    switch(temp){
-        case 1: break;
-        case 2: cout << "sorry i didn't make create yet...";break;
-    }
-    while(true){
-        cout << "databases list : " << endl;
-        MYSQL_RES* res = mysql_list_dbs(&conn_ptr,"%");
-        MYSQL_ROW row;
-        
-        while((row = mysql_fetch_row(res)))
-        {
-            cout << row[0] << endl;
-        }
-        cout << "input database name" << endl;
-        string tmp;
-        getline(cin,tmp);
-        if(mysql_select_db(&conn_ptr,tmp.c_str()))
-            break;
-        cout << "error - does not exist database" << endl;
+        continue;
+    n -= '0';
+
+    switch(n){
+        case 1: selectDB(&conn_ptr); break;
+        case 2: createDB(&conn_ptr); break;
     }
     
     
     cout << "please log-in or create key" <<endl;
     //TODO : log-in or create HEAAN account
-
-    int n = -1;
+    
     while(true) {
         cout << "input number to act" << endl;
         cout << "0 : change account" << endl;
@@ -87,6 +69,38 @@ int start_menu(){
     
 
     return 0;
+}
+
+void selectDB(MYSQL* conn_ptr){
+    while(true){
+        cout << "databases list : " << endl;
+        MYSQL_RES* res = mysql_list_dbs(conn_ptr,"%");
+        MYSQL_ROW row;
+        
+        while((row = mysql_fetch_row(res)))
+        {
+            cout << row[0] << endl;
+        }
+        cout << "input database name" << endl;
+        string tmp;
+        getline(cin,tmp);
+        if(mysql_select_db(conn_ptr,(tmp + " ").c_str()))
+            break;
+        cout << "error - does not exist database" << endl << endl;
+        
+    }
+}
+
+void createDB(MYSQL* conn_ptr){
+    cout << "input name" << endl;
+    string name;
+    getline(cin,name);
+    if(mysql_query(conn_ptr,("CREATE DATABASE "+ name + " " + ";").c_str())){
+        
+    mysql_query(conn_ptr,("USE "+name + " "+";").c_str());
+    }else{
+        printf("%s\n", mysql_error(conn_ptr));
+    }
 }
 
 //if select exit prgram case, return 1, else return 0
