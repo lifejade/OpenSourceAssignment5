@@ -20,9 +20,9 @@ int start_menu(){
         string name;
         string password;
         
-        cout << "user name : (recommend : root)";
+        cout << "user name (recommend - root) : ";
         getline(cin,name);
-        cout << "password : (recomment : )";
+        cout << "password (recommend - ) : ";
         getline(cin,password);
         
         if(!mysql_real_connect(&conn_ptr, "localhost", name.c_str(), password.c_str(), NULL, 0, NULL, 0))
@@ -34,25 +34,29 @@ int start_menu(){
     }
     
 
-    cout << "select  your db" << endl;
+    cout << "select or create your db" << endl;
+    cout << "1 : select, 2 : create" << endl;
+    int temp = cin.get();
+    while(cin.get() != '\n')
+            continue;
     
+    switch(temp){
+        case 1: break;
+        case 2: cout << "sorry i didn't make create yet...";break;
+    }
     while(true){
         cout << "databases list : " << endl;
         MYSQL_RES* res = mysql_list_dbs(&conn_ptr,"%");
         MYSQL_ROW row;
-        int fields = mysql_num_fields(res);
+        
         while((row = mysql_fetch_row(res)))
         {
-            for(int cnt = 0; cnt<fields; ++cnt)
-                cout << cnt << " : " << row[cnt];
-            cout << endl;
+            cout << row[0] << endl;
         }
-        cout << "input database name or number" << endl;
+        cout << "input database name" << endl;
         string tmp;
         getline(cin,tmp);
         if(mysql_select_db(&conn_ptr,tmp.c_str()))
-            break;
-        if(mysql_select_db(&conn_ptr, row[stoi(tmp.c_str())]))
             break;
         cout << "error - does not exist database" << endl;
     }
