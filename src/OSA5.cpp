@@ -12,10 +12,32 @@ int start_menu(){
     cout << "OpenSourceAssignment5(OSA5) - by 20011759 ParkSuMin" << endl;
     cout << "mysql + HEAAN project, github flow" << endl;
     
-    cout << "waiting for connect to db..." << endl;
+    cout << "connect db..." <<endl << "input your user name, password and database";
 
+    MYSQL conn_ptr;
+    mysql_init(&conn_ptr);    //mssql initialize
+    while(true){
+        string name;
+        string password;
+        
+        cin >> name;
+        cin >> password;
+
+        if(!mysql_real_connect(&conn_ptr, "localhost", name.c_str(), password.c_str(), NULL, 0, NULL, 0))
+        {
+        printf("%s\n", mysql_error(&conn_ptr));
+        }else{
+            break;
+        }
+    }
+    
+      
+    
+    
     cout << "select or create your db" << endl;
     //TODO : select or create db...
+    string databasename;
+    cin >> databasename;
 
     cout << "please log-in or create key" <<endl;
     //TODO : log-in or create HEAAN account
