@@ -6,7 +6,7 @@ using namespace std;
 using namespace heaan;
 
 namespace OSA5 {
-    //create table, domain  = domain * 2 (because of complex number)
+    //create table
     int TableUtils::createTable(MYSQL* conn_ptr){
         string input;
         getline(cin, input);
@@ -37,15 +37,12 @@ namespace OSA5 {
         result += "(";
 
         for(int i=firstidx; i<vec.size(); i++){
-            result += (vec[i++] + "_r ");
-            result += (vec[i] + " ");
+            result += (vec[i++] + ' ');
+            //double - 8byte, complex number => *2
+            result += "BINARY(16)";
+            if(i != vec.size() - 1)
+                result += ", ";
         }
-        result += ',';
-        for(int i=firstidx; i<vec.size(); i++){
-            result += (vec[i++] + "_i ");
-            result += (vec[i] + " ");
-        }
-
         result += ")";
 
         cout << "result_temp" << result << endl;

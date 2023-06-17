@@ -89,10 +89,10 @@ void selectDB(MYSQL* conn_ptr){
         string tmp;
         getline(cin,tmp);
 
-        if(mysql_query(conn_ptr,("USE " + tmp).c_str()))
-            printf("%s\n", mysql_error(conn_ptr));
-        else
+        if(!mysql_query(conn_ptr,("USE " + tmp).c_str()))
             break;
+        else
+            printf("%s\n", mysql_error(conn_ptr));
     }
 }
 
@@ -100,7 +100,7 @@ void createDB(MYSQL* conn_ptr){
     cout << "input name" << endl;
     string name;
     getline(cin,name);
-    if(mysql_query(conn_ptr,("CREATE DATABASE "+ name + " ").c_str())){
+    if(!mysql_query(conn_ptr,("CREATE DATABASE "+ name + " ").c_str())){
         mysql_query(conn_ptr,("USE "+name).c_str());
     } else{
         printf("%s\n", mysql_error(conn_ptr));
