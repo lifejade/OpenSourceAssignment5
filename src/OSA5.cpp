@@ -1,4 +1,3 @@
-#include <string>
 #include "OSA5.h"
 
 using namespace std;
@@ -31,7 +30,7 @@ int start_menu(){
         }
     }
     
-
+    /*
     cout << "select or create your db" << endl;
     cout << "1 : select, 2 : create" << endl;
     int n = cin.get();
@@ -47,8 +46,9 @@ int start_menu(){
     
     cout << "please log-in or create key" <<endl;
     //TODO : log-in or create HEAAN account
-    
+    account ac;
 
+    /*
     while(true) {
         cout << "input number to act" << endl;
         cout << "0 : change account" << endl;
@@ -66,7 +66,10 @@ int start_menu(){
         if(switchCase(n) == 1)
             return 0;
         cout << endl << endl;
-    }
+    }*/
+
+    cout << "temp : create tables" << endl;
+    TableUtils::createTable(&conn_ptr);
     
 
     return 0;
