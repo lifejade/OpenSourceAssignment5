@@ -30,7 +30,7 @@ int start_menu(){
         }
     }
     
-    /*
+    
     cout << "select or create your db" << endl;
     cout << "1 : select, 2 : create" << endl;
     int n = cin.get();
@@ -88,10 +88,11 @@ void selectDB(MYSQL* conn_ptr){
         cout << "input database name" << endl;
         string tmp;
         getline(cin,tmp);
-        if(mysql_select_db(conn_ptr,(tmp + " ").c_str()))
+
+        if(mysql_query(conn_ptr,("USE " + tmp).c_str()))
+            printf("%s\n", mysql_error(conn_ptr));
+        else
             break;
-        cout << "error - does not exist database" << endl << endl;
-        
     }
 }
 
@@ -99,10 +100,9 @@ void createDB(MYSQL* conn_ptr){
     cout << "input name" << endl;
     string name;
     getline(cin,name);
-    if(mysql_query(conn_ptr,("CREATE DATABASE "+ name + " " + ";").c_str())){
-        
-    mysql_query(conn_ptr,("USE "+name + " "+";").c_str());
-    }else{
+    if(mysql_query(conn_ptr,("CREATE DATABASE "+ name + " ").c_str())){
+        mysql_query(conn_ptr,("USE "+name).c_str());
+    } else{
         printf("%s\n", mysql_error(conn_ptr));
     }
 }
