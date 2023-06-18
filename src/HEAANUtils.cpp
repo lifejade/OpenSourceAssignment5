@@ -19,7 +19,7 @@ namespace OSA5{
             result[i] <<= 100;
 
             result[i] += cipher.bx[Nh + i*gap]; 
-            
+            cout << "sex" << result[i] << endl;
             if(i < 3){
                 cout << cipher.ax[i*gap] << " : " << cipher.ax[Nh + i*gap] << endl;
             }
@@ -33,7 +33,9 @@ namespace OSA5{
         int slot = 1<<(ac->logn);        
         ZZ* result = new ZZ[slot];
         ZZ mod(1);
-        mod <<= 100; 
+        mod <<= 100;
+        //cout << "mod : " << mod << endl; 
+
         long gap = Nh / (slot);
         
         Ciphertext cipher;
@@ -44,7 +46,7 @@ namespace OSA5{
 
         for(int i = 0;i<len;i++){
             ZZ z = stringToNumber(row[i]);
-
+            //cout << "sex" << z << endl;
             cipher.bx[Nh + i * gap] = z % mod;
             z >>= 100;
 
@@ -58,6 +60,7 @@ namespace OSA5{
             if(i < 3){
                 cout << cipher.ax[i*gap] << " : " << cipher.ax[Nh + i*gap] << endl;
             }
+            
         }
         
         return ac->scheme_ptr->decrypt(*(ac->secretKey), cipher);
@@ -69,6 +72,11 @@ namespace OSA5{
         long len = str.length();
         for(long i = 1; i < len; i++)
         {
+            ZZ temp = conv<ZZ>(str[i] - '0');
+            if(temp < 0 || temp > 9){
+                str.resize(i);
+                break;
+            }
             number *= 10;
             number += conv<ZZ>(str[i] - '0');
         }
@@ -77,13 +85,15 @@ namespace OSA5{
 
     string HEAANUtils::numberToString(ZZ num)
     {
-    long len = ceil(log(num)/log(10));
-    char str[len];
+    long len = ceil(log(num)/log(ZZ(10)));
+    char str[len] = {0,};
     for(long i = len-1; i >= 0; i--)
     {
+        
         str[i] = conv<int>((num % 10) + '0');
         num /= 10;
     }
+    cout << endl;
 
     return (string) str;
     }

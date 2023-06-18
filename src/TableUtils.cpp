@@ -113,7 +113,7 @@ namespace OSA5 {
         MYSQL_ROW row;
         
         while((row = mysql_fetch_row(result)) != NULL){
-            cout << "sex " << str12 << endl << row[0] << endl << str12.compare(row[0]) << endl<<endl;
+            //cout << "sexasdfasf " << str12 << endl << row[0] << endl << str12.compare(row[0]) << endl<<endl;
             complex<double>* c = HEAANUtils::Decrypt(ac,row, result -> field_count);
             for(int i=0;i < result->field_count;i++){
 	            cout << c[i] << "  |  ";
