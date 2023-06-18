@@ -18,6 +18,7 @@ using namespace NTL;
 namespace OSA5 {
     class TableUtils{
     public :
+        static int selectFrom(MYSQL* conn_ptr, account* ac);
         static int insertValues(MYSQL* conn_ptr, account* ac);
         static int createTable(MYSQL* conn_ptr);
         static vector<string> splitString(string str, char dl);

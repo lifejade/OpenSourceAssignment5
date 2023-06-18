@@ -32,7 +32,7 @@ namespace OSA5 {
             //modulus = 100bit
             //ax, bx, and imaginary each other => *4,
             //100*4/8 = 50byte 
-            result += "BLOB(50)";
+            result += "BLOB(60)";
             if(i != vec.size() - 1)
                 result += ", ";
         }
@@ -96,10 +96,31 @@ namespace OSA5 {
         result += ")";
         if(!mysql_query(conn_ptr,result.c_str()));
             printf("%s\n", mysql_error(conn_ptr));
-
+        
         delete [] cyphertext;
     }
+    int TableUtils::selectFrom(MYSQL* conn_ptr, account* ac){
+        string input;
+        getline(cin, input);
+        if(mysql_query(conn_ptr,input.c_str())){
+            printf("%s\n", mysql_error(conn_ptr));
+            return 0;
+        }
+        MYSQL_RES* result;
+        result = mysql_store_result(conn_ptr);
 
+        MYSQL_ROW row;
+        
+        while((row = mysql_fetch_row(result)) != NULL){
+            for(int i=0;i < result->row_count;i++){
+                cout << row[i] << "   |   ";
+            }
+            cout << '\n';
+        }
+
+
+        mysql_free_result(result);
+    }
     vector<string> TableUtils::splitString(string str, char dl){
         istringstream ss(str);
         string stringBuffer;

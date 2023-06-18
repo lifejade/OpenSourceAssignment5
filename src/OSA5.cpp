@@ -68,10 +68,10 @@ int start_menu(){
     }*/
 
     cout << "temp : create tables" << endl;
-    TableUtils::createTable(&conn_ptr);
+    //TableUtils::createTable(&conn_ptr);
     cout << "temp : insert datas" << endl;
-    TableUtils::insertValues(&conn_ptr, ac);
-    
+    //TableUtils::insertValues(&conn_ptr, ac);
+    TableUtils::selectFrom(&conn_ptr,ac);
     delete ac;
     return 0;
 }
