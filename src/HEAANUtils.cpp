@@ -33,7 +33,7 @@ namespace OSA5{
     long len = str.length();
     for(long i = 1; i < len; i++)
     {
-        number *= 10;
+        number *= 256;
         number += conv<ZZ>(str[i]);
     }
 
@@ -42,12 +42,12 @@ namespace OSA5{
 
     string HEAANUtils::numberToString(ZZ num)
     {
-    long len = ceil(log(num)/log(10));
+    long len = ceil(log(num)/log(256));
     char str[len];
     for(long i = len-1; i >= 0; i--)
     {
-        str[i] = conv<int>(num % 10);
-        num /= 10;
+        str[i] = (char)conv<int>(num % 256);
+        num /= 256;
     }
 
     return (string) str;

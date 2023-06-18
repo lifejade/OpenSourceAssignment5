@@ -32,7 +32,7 @@ namespace OSA5 {
             //modulus = 100bit
             //ax, bx, and imaginary each other => *4,
             //100*4/8 = 50byte 
-            result += "TEXT(50)";
+            result += "BLOB(50)";
             if(i != vec.size() - 1)
                 result += ", ";
         }
