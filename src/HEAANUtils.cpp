@@ -19,7 +19,7 @@ namespace OSA5{
             result[i] <<= 100;
 
             result[i] += cipher.bx[Nh + i*gap]; 
-            cout << "sex" << result[i] << endl;
+            //cout << "test" << result[i] << endl;
             if(i < 3){
                 cout << cipher.ax[i*gap] << " : " << cipher.ax[Nh + i*gap] << endl;
             }
@@ -46,7 +46,7 @@ namespace OSA5{
 
         for(int i = 0;i<len;i++){
             ZZ z = stringToNumber(row[i]);
-            //cout << "sex" << z << endl;
+            //cout << "test" << z << endl;
             cipher.bx[Nh + i * gap] = z % mod;
             z >>= 100;
 
