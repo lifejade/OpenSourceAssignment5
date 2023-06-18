@@ -1,42 +1,41 @@
 #include "HEAANUtils.h"
 
 namespace OSA5{
-    ZZ* HEAANUtils::Encrypt(account* ac, complex<double>* vec){
+    ZZ* HEAANUtils::Encrypt(account* ac, complex<double>* vec, int len){
         Ciphertext cipher;
         int slot = 1<<(ac->logn);
         ac->scheme_ptr->encrypt(cipher,vec,slot,ac->logp,ac->logq);
-        ZZ* result = new ZZ[slot];
-        long gap = Nh / (slot);
-        for(int i = 0;i<slot;i++){
-            
-            result[i] = cipher.ax[i * gap];
-            result[i] <<= 100;
+        ZZ* result = new ZZ[len];
+        
+        for(int i = 0;i<len;i++){
+            long gap = ceil((float)N/len);
+            result[i] = 0;
 
-            result[i] += cipher.ax[Nh +i * gap];
-            result[i] <<= 100;
-
-            result[i] += cipher.bx[i*gap];
-            result[i] <<= 100;
-
-            result[i] += cipher.bx[Nh + i*gap]; 
-            //cout << "test" << result[i] << endl;
-            if(i < 3){
-                cout << cipher.ax[i*gap] << " : " << cipher.ax[Nh + i*gap] << endl;
+            for(int j=0;j<gap;j++){
+                if(j + i*gap >= N)
+                    break;
+                result[i] <<= 12;
+                result[i] += cipher.ax[j + i*gap];
+                result[i] <<= 12;
+                result[i] += cipher.bx[j + i*gap];
             }
-        }
 
+            if(i < 3){
+                cout << cipher.ax[i] << " : " << cipher.bx[i] << endl;
+            }
+            
+        }
+        //cout << "test : " << result[0] << endl;
         return result;
     }
 
     
     complex<double>* HEAANUtils::Decrypt(account* ac, MYSQL_ROW row, int len){
-        int slot = 1<<(ac->logn);        
-        ZZ* result = new ZZ[slot];
         ZZ mod(1);
-        mod <<= 100;
+        mod <<= 12;
         //cout << "mod : " << mod << endl; 
 
-        long gap = Nh / (slot);
+        long gap = ceil((float)N/len);
         
         Ciphertext cipher;
 
@@ -44,21 +43,23 @@ namespace OSA5{
         cipher.logq = ac->logq;
         cipher.n = 1 << ac->logn;
 
-        for(int i = 0;i<len;i++){
+        for(int i = 0;i < len;i++){
             ZZ z = stringToNumber(row[i]);
-            //cout << "test" << z << endl;
-            cipher.bx[Nh + i * gap] = z % mod;
-            z >>= 100;
+            //cout << "test : " << z << endl;
+            for(int j = 0;j<gap;j++){
+                //cout << "test" << z << endl;
+                int tmp = N - (i * gap + j) - 1;
+                if(tmp < 0)
+                    break;
 
-            cipher.bx[i*gap] = z%mod;
-            z >>= 100;
+                cipher.bx[tmp] = z % mod;
+                z >>= 12;
+                cipher.ax[tmp] = z % mod;
+                z >>= 12;
+            }
 
-            cipher.ax[Nh + i*gap] = z%mod;
-            z>>=100;
-
-            cipher.ax[i*gap] = z%mod;
             if(i < 3){
-                cout << cipher.ax[i*gap] << " : " << cipher.ax[Nh + i*gap] << endl;
+                cout << cipher.ax[i] << " : " << cipher.bx[i] << endl;
             }
             
         }

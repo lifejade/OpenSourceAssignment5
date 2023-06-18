@@ -15,7 +15,7 @@ namespace OSA5{
     class HEAANUtils{
         public:
 
-        static ZZ* Encrypt(account* ac, complex<double>* vec);
+        static ZZ* Encrypt(account* ac, complex<double>* vec, int len);
         static complex<double>* Decrypt(account* ac, MYSQL_ROW row, int len);
         static string numberToString(ZZ num);
         static ZZ stringToNumber(string str);

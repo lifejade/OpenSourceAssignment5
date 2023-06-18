@@ -66,9 +66,16 @@ int start_menu(){
             return 0;
         cout << endl << endl;
     }*/
+    cout << "create Table?(1=yes) : ";
+    n = cin.get();
+    while(cin.get() != '\n')
+        continue;
+    n -= '0';
+    if(n==1){
+        cout << "temp : create tables" << endl;
+        TableUtils::createTable(&conn_ptr);
+    }
 
-    cout << "temp : create tables" << endl;
-    //TableUtils::createTable(&conn_ptr);
     cout << "temp : insert datas" << endl;
     TableUtils::insertValues(&conn_ptr, ac);
     cout << "temp : select datas" << endl;
