@@ -16,7 +16,7 @@ namespace OSA5{
         public:
 
         static ZZ* Encrypt(account* ac, complex<double>* vec);
-        static complex<double>* Decrypt(account* ac, complex<double>* vec);
+        static complex<double>* Decrypt(account* ac, MYSQL_ROW row, int len);
         static string numberToString(ZZ num);
         static ZZ stringToNumber(string str);
     };

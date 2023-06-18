@@ -2,6 +2,7 @@
 
 
 namespace OSA5 {
+    static string str12;
     //create table
     int TableUtils::createTable(MYSQL* conn_ptr){
         string input;
@@ -88,15 +89,15 @@ namespace OSA5 {
         
         //input query
         for(int i = 0;i<vec.size(); i++){
-            result += "BINARY \"" + HEAANUtils::numberToString(cyphertext[i]) + "\"";
+            result += "\"" + HEAANUtils::numberToString(cyphertext[i]) + "\"";
             if(i != vec.size() -1){
                 result += ", ";
             }
         }
         result += ")";
-        if(!mysql_query(conn_ptr,result.c_str()));
+        if(!mysql_query(conn_ptr,result.c_str()))
             printf("%s\n", mysql_error(conn_ptr));
-        
+        str12= HEAANUtils::numberToString(cyphertext[0]);
         delete [] cyphertext;
     }
     int TableUtils::selectFrom(MYSQL* conn_ptr, account* ac){
@@ -112,8 +113,10 @@ namespace OSA5 {
         MYSQL_ROW row;
         
         while((row = mysql_fetch_row(result)) != NULL){
-            for(int i=0;i < result->row_count;i++){
-                cout << row[i] << "   |   ";
+            cout << "sex " << str12 << endl << row[0] << endl << str12.compare(row[0]) << endl<<endl;
+            complex<double>* c = HEAANUtils::Decrypt(ac,row, result -> field_count);
+            for(int i=0;i < result->field_count;i++){
+	            cout << c[i] << "  |  ";
             }
             cout << '\n';
         }
