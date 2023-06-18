@@ -1,7 +1,6 @@
 #include "OSA5.h"
 
-using namespace std;
-using namespace heaan;
+
 
 
 namespace OSA5{
@@ -46,7 +45,7 @@ int start_menu(){
     
     cout << "please log-in or create key" <<endl;
     //TODO : log-in or create HEAAN account
-    account ac;
+    account* ac = new account();
 
     /*
     while(true) {
@@ -69,9 +68,11 @@ int start_menu(){
     }*/
 
     cout << "temp : create tables" << endl;
-    TableUtils::createTable(&conn_ptr);
+    //TableUtils::createTable(&conn_ptr);
+    cout << "temp : insert datas" << endl;
+    TableUtils::insertValues(&conn_ptr, ac);
     
-
+    delete ac;
     return 0;
 }
 
