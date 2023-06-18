@@ -3,8 +3,8 @@
 
 namespace OSA5{
     account::account(){
-        logq = 100; ///< Ciphertext Modulus
-	    logp = 30; ///< Real message will be quantized by multiplying 2^40
+        logq = 16; ///< Ciphertext Modulus
+	    logp = 4; ///< Real message will be quantized by multiplying 2^40
 	    logn = 2; ///< log2(The number of slots)
 
         

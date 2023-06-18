@@ -1,7 +1,7 @@
 #include "HEAANUtils.h"
 
 namespace OSA5{
-    ZZ* HEAANUtils::Encrypt(account* ac, complex<double>* vec){
+    ZZ* HEAANUtils::Encrypt(account* ac, complex<double>* vec, int len){
         Ciphertext cipher;
         int slot = 1<<(ac->logn);
         ac->scheme_ptr->encrypt(cipher,vec,slot,ac->logp,ac->logq);
