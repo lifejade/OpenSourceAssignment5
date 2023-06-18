@@ -2,6 +2,7 @@
 
 
 namespace OSA5 {
+    static string str12;
     //create table
     int TableUtils::createTable(MYSQL* conn_ptr){
         string input;
@@ -32,7 +33,7 @@ namespace OSA5 {
             //modulus = 100bit
             //ax, bx, and imaginary each other => *4,
             //100*4/8 = 50byte 
-            result += "BLOB(50)";
+            result += "BLOB(60)";
             if(i != vec.size() - 1)
                 result += ", ";
         }
@@ -88,18 +89,39 @@ namespace OSA5 {
         
         //input query
         for(int i = 0;i<vec.size(); i++){
-            result += "BINARY \"" + HEAANUtils::numberToString(cyphertext[i]) + "\"";
+            result += "\"" + HEAANUtils::numberToString(cyphertext[i]) + "\"";
             if(i != vec.size() -1){
                 result += ", ";
             }
         }
         result += ")";
-        if(!mysql_query(conn_ptr,result.c_str()));
+        if(!mysql_query(conn_ptr,result.c_str()))
             printf("%s\n", mysql_error(conn_ptr));
-
+        str12= HEAANUtils::numberToString(cyphertext[0]);
         delete [] cyphertext;
     }
+    int TableUtils::selectFrom(MYSQL* conn_ptr, account* ac){
+        string input;
+        getline(cin, input);
+        if(mysql_query(conn_ptr,input.c_str())){
+            printf("%s\n", mysql_error(conn_ptr));
+            return 0;
+        }
+        MYSQL_RES* result;
+        result = mysql_store_result(conn_ptr);
 
+        MYSQL_ROW row;
+        
+        while((row = mysql_fetch_row(result)) != NULL){complex<double>* c = HEAANUtils::Decrypt(ac,row, result -> field_count);
+            for(int i=0;i < result->field_count;i++){
+	            cout << c[i] << "  |  ";
+            }
+            cout << '\n';
+        }
+
+
+        mysql_free_result(result);
+    }
     vector<string> TableUtils::splitString(string str, char dl){
         istringstream ss(str);
         string stringBuffer;
