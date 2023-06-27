@@ -1,101 +1,113 @@
 #include "HEAANUtils.h"
 
 namespace OSA5{
+    static Ciphertext test;
     ZZ* HEAANUtils::Encrypt(account* ac, complex<double>* vec, int len){
         Ciphertext cipher;
         int slot = 1<<(ac->logn);
         ac->scheme_ptr->encrypt(cipher,vec,slot,ac->logp,ac->logq);
         ZZ* result = new ZZ[len];
-        
+        long gap = ceil((float)N/len);
         for(int i = 0;i<len;i++){
-            long gap = ceil((float)N/len);
-            result[i] = 0;
+            result[i] = ZZ(0);
 
             for(int j=0;j<gap;j++){
                 if(j + i*gap >= N)
                     break;
-                result[i] <<= 12;
+                result[i] <<= 64;
                 result[i] += cipher.ax[j + i*gap];
-                result[i] <<= 12;
+                result[i] <<= 64;
                 result[i] += cipher.bx[j + i*gap];
-            }
 
-            if(i < 3){
-                cout << cipher.ax[i] << " : " << cipher.bx[i] << endl;
+
+                if(j + i*gap == 0)
+                    cout << cipher.ax[j + i*gap] << " | " << cipher.bx[j + i*gap] <<  endl;
             }
-            
         }
-        //cout << "test : " << result[0] << endl;
+        test.copy(cipher);
         return result;
     }
 
     
-    complex<double>* HEAANUtils::Decrypt(account* ac, MYSQL_ROW row, int len){
+    complex<double>* HEAANUtils::Decrypt(account* ac, MYSQL_ROW row, unsigned long* length, int degree){
         ZZ mod(1);
-        mod <<= 12;
-        //cout << "mod : " << mod << endl; 
-
-        long gap = ceil((float)N/len);
+        mod <<= 64;
+        
+        
         
         Ciphertext cipher;
 
         cipher.logp = ac->logp;
         cipher.logq = ac->logq;
         cipher.n = 1 << ac->logn;
-
-        for(int i = 0;i < len;i++){
-            ZZ z = stringToNumber(row[i]);
-            //cout << "test : " << z << endl;
-            for(int j = 0;j<gap;j++){
+        long gap = ceil((float)N/cipher.n);
+        for(long i = 0;i < degree;i++){
+            ZZ z = char_arrToNumber(row[i], length[i]);
+            for(long j = 0;j<gap;j++){
                 //cout << "test" << z << endl;
-                int tmp = N - (i * gap + j) - 1;
+                long tmp = N - ((degree - i - 1) * gap + j) - 1;
                 if(tmp < 0)
                     break;
-
+                
                 cipher.bx[tmp] = z % mod;
-                z >>= 12;
+                z >>= 64;
+                if(cipher.bx[tmp] > (mod / 2)){
+                    cipher.bx[tmp] -= mod;
+                    z+=1;
+                }
+
                 cipher.ax[tmp] = z % mod;
-                z >>= 12;
+                z >>= 64;
+                if(cipher.ax[tmp] > (mod / 2)){
+                    cipher.ax[tmp] -= mod;
+                    z+=1;
+                }
+                if(tmp == 0)
+                    cout << cipher.ax[tmp] << " | " << cipher.bx[tmp] <<  endl;
             }
 
-            if(i < 3){
-                cout << cipher.ax[i] << " : " << cipher.bx[i] << endl;
-            }
-            
         }
         
+        for(int i =0;i<N;i++){
+            if(test.ax[i] != cipher.ax[i] || test.bx[i] != cipher.bx[i]){
+                cout << "ERIIR : " << i  << endl;
+                for(int j = 0;j<10;j++){
+                int tmp = i + j - 5;
+                if(tmp < 0 || tmp >= N)
+                    continue;
+                cout << tmp << endl;
+                cout << test.ax[tmp] << " | " << test.bx[tmp] <<  endl;
+                cout << cipher.ax[tmp] << " | " << cipher.bx[tmp] <<  endl << endl;
+
+                }
+                break;
+            }
+        }
         return ac->scheme_ptr->decrypt(*(ac->secretKey), cipher);
     }
 
-    ZZ HEAANUtils::stringToNumber(string str)
+    ZZ HEAANUtils::char_arrToNumber(char* str, int len)
     {
-        ZZ number = conv<ZZ>(str[0] - '0');
-        long len = str.length();
+        ZZ number = conv<ZZ>((int)str[0] + 128);
         for(long i = 1; i < len; i++)
         {
-            ZZ temp = conv<ZZ>(str[i] - '0');
-            if(temp < 0 || temp > 9){
-                str.resize(i);
-                break;
-            }
-            number *= 10;
-            number += conv<ZZ>(str[i] - '0');
+            number *= 256;
+            number += conv<ZZ>((int)str[i] + 128);
         }
         return number;
     }
 
-    string HEAANUtils::numberToString(ZZ num)
+    char* HEAANUtils::numberTochar_arr(ZZ num, int* lenptr)
     {
-    long len = ceil(log(num)/log(ZZ(10)));
-    char str[len] = {0,};
-    for(long i = len-1; i >= 0; i--)
+    long len = ceil(log(num)/log(ZZ(256)));
+    char* str = (char*)malloc(sizeof(char) * len);
+    for(long i = len - 1; i >= 0; i--)
     {
-        
-        str[i] = conv<int>((num % 10) + '0');
-        num /= 10;
+        str[i] = conv<int>((num % 256) - 128);
+        num /= 256;
     }
     cout << endl;
-
-    return (string) str;
+    *lenptr = len;
+    return str;
     }
 }

@@ -14,8 +14,7 @@ namespace OSA5{
 	    long logp; ///< Real message will be quantized by multiplying 2^40
 	    long logn; ///< log2(The number of slots)
 
-        
-        Ring ring;
+        Ring* ring;
 	    SecretKey* secretKey;
 	    Scheme* scheme_ptr;
         

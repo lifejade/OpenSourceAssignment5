@@ -29,10 +29,9 @@ namespace OSA5 {
 
         for(int i=firstidx; i<vec.size(); i++){
             result += (vec[i++] + ' ');
-            //modulus = 100bit
-            //ax, bx, and imaginary each other => *4,
-            //100*4/8 = 50byte 
-            result += "BLOB(60)";
+            //modulus = 8bit, N = 16bit
+            //8*16/8 = 16byte 
+            result += "BLOB(500000)";
             if(i != vec.size() - 1)
                 result += ", ";
         }
@@ -88,13 +87,21 @@ namespace OSA5 {
         
         //input query
         for(int i = 0;i<vec.size(); i++){
-            result += "\"" + HEAANUtils::numberToString(cyphertext[i]) + "\"";
+            result += '\"';
+            int len = -1;
+            char* buf = HEAANUtils::numberTochar_arr(cyphertext[i],&len);
+            char* buf_real = (char*)malloc(sizeof(char) * (len * 2 + 1));
+            mysql_real_escape_string(conn_ptr,buf_real,buf,len);
+            result += buf_real;
+            result += '\"';
             if(i != vec.size() -1){
                 result += ", ";
             }
+            //delete [] buf;
+            delete [] buf_real;
         }
         result += ")";
-        if(mysql_query(conn_ptr,result.c_str()))
+        if(mysql_real_query(conn_ptr,result.c_str(),result.length()))
             printf("%s\n", mysql_error(conn_ptr));
         delete [] cyphertext;
     }
@@ -109,8 +116,9 @@ namespace OSA5 {
         result = mysql_store_result(conn_ptr);
 
         MYSQL_ROW row;
-        
-        while((row = mysql_fetch_row(result)) != NULL){complex<double>* c = HEAANUtils::Decrypt(ac,row, result -> field_count);
+        while((row = mysql_fetch_row(result)) != NULL){
+            unsigned long * length = mysql_fetch_lengths(result);
+            complex<double>* c = HEAANUtils::Decrypt(ac,row, length, result->field_count);
             for(int i=0;i < result->field_count;i++){
 	            cout << c[i] << "  |  ";
             }
